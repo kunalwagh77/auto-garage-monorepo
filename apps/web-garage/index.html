@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoFix Garage | Professional Car Care & Repairs</title>
+    <meta name="description" content="Professional garage services, instant price estimates, and online booking. Fast, reliable, and affordable car repairs.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="container nav-container">
+            <div class="logo">
+                <i data-lucide="wrench"></i>
+                <span>AUTO<strong>FIX</strong></span>
+            </div>
+            
+            <nav id="main-nav">
+                <ul>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#estimator">Price Estimator</a></li>
+                    <li><a href="#booking">Book Online</a></li>
+                    <li><a href="#reviews">Reviews</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <a href="tel:+1234567890" class="btn btn-emergency">
+                    <i data-lucide="phone-call"></i>
+                    <span>EMERGENCY</span>
+                </a>
+                <button class="menu-toggle" aria-label="Toggle Menu">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container hero-content">
+                <h1>Expert Car Care You Can Trust</h1>
+                <p>From routine maintenance to complex repairs, we get you back on the road safely and swiftly.</p>
+                <div class="hero-btns">
+                    <a href="#booking" class="btn btn-primary">Book a Service</a>
+                    <a href="#estimator" class="btn btn-secondary">Get an Estimate</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="services">
+            <div class="container">
+                <h2 class="section-title">Our Services</h2>
+                <div class="services-grid" id="services-display">
+                    <!-- Dynamic Services Content -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Price Estimator Section -->
+        <section id="estimator" class="estimator bg-light">
+            <div class="container">
+                <h2 class="section-title">Price Estimator</h2>
+                <p class="section-subtitle">Select services to get an instant cost estimate.</p>
+                
+                <div class="estimator-card">
+                    <div class="estimator-options" id="estimator-list">
+                        <!-- Dynamic Checkboxes -->
+                    </div>
+                    <div class="estimator-total">
+                        <h3>Estimated Total: <span id="total-price">£0.00</span></h3>
+                        <p>*Final price may vary based on vehicle model and parts required.</p>
+                        <a href="#booking" class="btn btn-primary">Book These Services</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Booking Section -->
+        <section id="booking" class="booking">
+            <div class="container">
+                <div class="booking-wrapper">
+                    <div class="booking-info">
+                        <h2>Book Your Appointment</h2>
+                        <p>Select your preferred date and time. We'll confirm your booking within 30 minutes during business hours.</p>
+                        <ul class="features-list">
+                            <li><i data-lucide="check-circle"></i> Certified Technicians</li>
+                            <li><i data-lucide="check-circle"></i> Genuine Parts</li>
+                            <li><i data-lucide="check-circle"></i> 12-Month Warranty</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="booking-form-container">
+                        <form id="appointment-form">
+                            <div class="form-group">
+                                <label for="full-name">Full Name</label>
+                                <input type="text" id="full-name" required placeholder="John Doe">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" required placeholder="john@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="tel" id="phone" required placeholder="07123 456789">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="service-type">Service Required</label>
+                                <select id="service-type" required>
+                                    <option value="" disabled selected>Select a service</option>
+                                    <option value="mot">MOT Test</option>
+                                    <option value="full-service">Full Service</option>
+                                    <option value="interim-service">Interim Service</option>
+                                    <option value="repairs">General Repairs</option>
+                                    <option value="tires">Tire Replacement</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="date-picker">Preferred Date & Time</label>
+                                <input type="text" id="date-picker" required placeholder="Select date and time">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Confirm Booking</button>
+                        </form>
+                        <div id="booking-success" class="success-message hidden">
+                            <i data-lucide="check-circle-2"></i>
+                            <h3>Booking Received!</h3>
+                            <p>Thank you for choosing AutoFix. We will contact you shortly to confirm your slot.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section id="reviews" class="reviews bg-light">
+            <div class="container">
+                <h2 class="section-title">What Our Customers Say</h2>
+                <div class="reviews-grid">
+                    <div class="review-card">
+                        <div class="stars">★★★★★</div>
+                        <p>"Fantastic service! Booked my MOT online and it was so easy. The team was professional and fast."</p>
+                        <div class="reviewer">- Sarah J.</div>
+                    </div>
+                    <div class="review-card">
+                        <div class="stars">★★★★★</div>
+                        <p>"Fair prices and honest advice. The price estimator was spot on. Highly recommend AutoFix."</p>
+                        <div class="reviewer">- Mark T.</div>
+                    </div>
+                    <div class="review-card">
+                        <div class="stars">★★★★★</div>
+                        <p>"My car broke down and they were so helpful. Used the emergency button on my phone and help arrived quickly."</p>
+                        <div class="reviewer">- Elena R.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-grid">
+            <div class="footer-about">
+                <div class="logo">
+                    <i data-lucide="wrench"></i>
+                    <span>AUTO<strong>FIX</strong></span>
+                </div>
+                <p>Your local experts in high-quality vehicle maintenance and repairs. Serving the community since 2010.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#estimator">Estimator</a></li>
+                    <li><a href="#booking">Booking</a></li>
+                    <li><a href="#reviews">Reviews</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Contact Us</h4>
+                <p><i data-lucide="map-pin"></i> 123 Garage Lane, Carcity, UK</p>
+                <p><i data-lucide="phone"></i> 01234 567 890</p>
+                <p><i data-lucide="mail"></i> info@autofix-garage.co.uk</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 AutoFix Garage. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/1234567890?text=Hi%20AutoFix,%20I'd%20like%20to%20enquire%20about%20a%20service." class="whatsapp-fab" target="_blank" aria-label="Chat on WhatsApp">
+        <i data-lucide="message-circle"></i>
+    </a>
+
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="script.js"></script>
+</body>
+</html>
