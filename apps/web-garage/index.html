@@ -3,23 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoFix Pro Garage - Dhule, Maharashtra</title>
+    <title>Wagh AutoFix Pro Garage - Dhule, Maharashtra</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            #printable-slip, #printable-slip * { visibility: visible; }
+            #printable-slip { position: absolute; left: 0; top: 0; width: 100%; color: black; background: white; padding: 20px; border: 1px solid #000; }
+        }
+    </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
 
-    <!-- Passcode Modal Pop-Up -->
+    <!-- DIGITAL SERVICE SLIP POPUP MODAL -->
+    <div id="slip-modal" style="display: none;" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-center items-center p-4">
+        <div class="bg-slate-900 border border-amber-500/40 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 text-slate-100">
+            
+            <!-- Printable Slip Content -->
+            <div id="printable-slip" class="space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                    <div>
+                        <h3 class="text-lg font-black text-white">Wagh AutoFix Pro Garage</h3>
+                        <p class="text-[11px] text-slate-400">At Post Dhule, Maharashtra | +91 8767338510</p>
+                    </div>
+                    <span id="slip-id-badge" class="bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2.5 py-1 rounded-lg text-xs font-mono font-bold">#GAR-00</span>
+                </div>
+
+                <div class="bg-slate-950 p-4 rounded-xl space-y-2 text-xs border border-slate-800">
+                    <div class="flex justify-between"><span class="text-slate-400">Customer Name:</span><span id="slip-customer" class="font-bold text-white">--</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Mobile Number:</span><span id="slip-phone" class="font-mono text-slate-200">--</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Service Package:</span><span id="slip-service" class="font-medium text-amber-400">--</span></div>
+                    <div class="flex justify-between"><span class="text-slate-400">Booking Date:</span><span id="slip-date" class="text-slate-300">--</span></div>
+                    <div class="flex justify-between border-t border-slate-800 pt-2"><span class="text-slate-400">Payment Status:</span><span class="text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded">UNPAID (Pay at Workshop)</span></div>
+                    <div class="flex justify-between text-sm font-bold border-t border-slate-800 pt-2"><span class="text-slate-300">Total Estimated:</span><span id="slip-cost" class="text-emerald-400">INR 0</span></div>
+                </div>
+
+                <div class="text-[10px] text-slate-500 text-center">
+                    Note: Please present this Digital Slip ID at the counter. Director: Kunal Wagh
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeSlipModal()" class="w-1/3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">Close</button>
+                <button onclick="downloadPdfSlip()" class="w-2/3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-2.5 rounded-xl text-xs uppercase transition shadow-lg shadow-orange-500/20 flex items-center justify-center gap-1">
+                    Download / Save PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PASSCODE SECURITY MODAL -->
     <div id="security-modal" style="display: none;" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-center items-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4">
             <div class="text-center">
-                <div class="text-3xl mb-2">??</div>
+                <div class="text-xs font-bold text-amber-400 uppercase tracking-widest mb-1">SECURITY LOCK</div>
                 <h3 class="text-xl font-bold text-white">Owner Admin Access</h3>
                 <p class="text-xs text-slate-400 mt-1">Enter Secret Passcode to access Kunal Wagh Control Panel.</p>
             </div>
             <div>
                 <input type="password" id="admin-passcode" placeholder="Enter Passcode" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-center text-lg font-bold text-amber-400 tracking-wider focus:outline-none focus:border-amber-500">
-                <p id="passcode-error" class="text-xs text-rose-500 mt-2 text-center hidden">? Incorrect Passcode! Access Denied.</p>
+                <p id="passcode-error" class="text-xs text-rose-500 mt-2 text-center hidden">Incorrect Passcode! Access Denied.</p>
             </div>
             <div class="flex gap-2">
                 <button onclick="closeSecurityModal()" class="w-1/2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs transition">Cancel</button>
@@ -28,16 +73,16 @@
         </div>
     </div>
 
-    <!-- Navigation Header -->
+    <!-- NAVIGATION HEADER -->
     <header class="sticky top-0 z-40 backdrop-blur-md bg-slate-900/90 border-b border-amber-500/20 shadow-lg shadow-black/50">
         <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="bg-gradient-to-tr from-amber-600 to-orange-500 p-2.5 rounded-xl shadow-lg shadow-orange-500/20 font-black text-slate-950 text-xl">
-                    ???
+                <div class="bg-gradient-to-tr from-amber-600 to-orange-500 px-3 py-2 rounded-xl shadow-lg shadow-orange-500/20 font-black text-slate-950 text-lg tracking-widest">
+                    WAGH
                 </div>
                 <div>
                     <h1 class="font-black text-xl text-white tracking-wider uppercase flex items-center gap-2">
-                        AutoFix Pro Garage <span class="text-xs font-normal normal-case bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full">Dhule Branch</span>
+                        Wagh AutoFix Pro Garage <span class="text-xs font-normal normal-case bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full">Dhule Branch</span>
                     </h1>
                     <p class="text-xs text-slate-400 font-medium">Multi-Brand Car & Bike Workshop</p>
                 </div>
@@ -45,28 +90,29 @@
 
             <!-- Tab Switch Buttons -->
             <nav class="flex items-center gap-2 bg-slate-950/80 p-1.5 rounded-xl border border-slate-800">
-                <button id="nav-book" onclick="openBookingTab()" class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20">
-                    ?? Book Service
+                <button id="nav-book" onclick="openBookingTab()" class="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20">
+                    Book Service
                 </button>
-                <button id="nav-admin" onclick="requestAdminAccess()" class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
-                    ?? Owner Admin Panel
+                <button id="nav-track" onclick="openTrackTab()" class="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+                    Track Status
+                </button>
+                <button id="nav-admin" onclick="requestAdminAccess()" class="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white hover:bg-slate-800/60">
+                    Owner Panel
                 </button>
             </nav>
         </div>
     </header>
 
-    <!-- Main Container -->
+    <!-- MAIN CONTAINER -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8">
         
         <!-- SECTION 1: CUSTOMER BOOKING VIEW -->
         <div id="booking-view" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <!-- Garage Info -->
             <div class="lg:col-span-5 space-y-6">
                 <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-sm">
                     <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-800">
-                        <h2 class="text-lg font-bold text-white flex items-center gap-2">?? Workshop Contact</h2>
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">? Open Now</span>
+                        <h2 class="text-lg font-bold text-white">Workshop Contact</h2>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">Open Now</span>
                     </div>
                     
                     <div class="space-y-4 text-sm">
@@ -101,10 +147,9 @@
                 </div>
             </div>
 
-            <!-- Booking Form -->
             <div class="lg:col-span-7">
                 <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 lg:p-8 shadow-2xl relative backdrop-blur-sm">
-                    <h2 class="text-2xl font-black text-white mb-1">?? Book Service Appointment</h2>
+                    <h2 class="text-2xl font-black text-white mb-1">Book Service Appointment</h2>
                     <p class="text-slate-400 text-sm mb-6">Select service & schedule your car/bike repair in Dhule Garage.</p>
 
                     <form id="booking-form" class="space-y-5">
@@ -131,13 +176,13 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-300 mb-2">Select Service Package (Indian Rupees ?) *</label>
+                            <label class="block text-xs font-bold text-slate-300 mb-2">Select Service Package (INR) *</label>
                             <select id="serviceType" onchange="calculatePrice()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition">
-                                <option value="Full Engine Oil Change (?2,499)" data-price="2499">??? Full Engine Oil Service - ?2,499</option>
-                                <option value="Brake Pad & Disk Service (?1,800)" data-price="1800">?? Brake Inspection & Replacement - ?1,800</option>
-                                <option value="Full Computer Diagnostic (?1,200)" data-price="1200">?? OBD-II Engine Computer Scanning - ?1,200</option>
-                                <option value="AC Servicing & Gas Refill (?2,200)" data-price="2200">?? Car AC Service & Gas Top-up - ?2,200</option>
-                                <option value="Foam Wash & Interior Cleaning (?799)" data-price="799">?? Complete Foam Wash & Polish - ?799</option>
+                                <option value="Full Engine Oil Change (INR 2,499)" data-price="2499">Full Engine Oil Service - INR 2,499</option>
+                                <option value="Brake Pad & Disk Service (INR 1,800)" data-price="1800">Brake Inspection & Replacement - INR 1,800</option>
+                                <option value="Full Computer Diagnostic (INR 1,200)" data-price="1200">OBD-II Engine Computer Scanning - INR 1,200</option>
+                                <option value="AC Servicing & Gas Refill (INR 2,200)" data-price="2200">Car AC Service & Gas Top-up - INR 2,200</option>
+                                <option value="Foam Wash & Interior Cleaning (INR 799)" data-price="799">Complete Foam Wash & Polish - INR 799</option>
                             </select>
                         </div>
 
@@ -146,7 +191,7 @@
                                 <p class="text-xs text-amber-400 font-bold">Estimated Cost (INR)</p>
                                 <p class="text-[11px] text-slate-400">Includes taxes & labor charges in Dhule</p>
                             </div>
-                            <span id="estimated-price" class="text-2xl font-black text-amber-400">?2,499</span>
+                            <span id="estimated-price" class="text-2xl font-black text-amber-400">INR 2,499</span>
                         </div>
 
                         <button type="submit" class="w-full bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 font-black py-3.5 px-6 rounded-xl shadow-lg shadow-orange-500/20 transition duration-200 uppercase tracking-wide">
@@ -157,20 +202,35 @@
                     <div id="booking-status" class="mt-4 text-center text-sm font-semibold min-h-[24px]"></div>
                 </div>
             </div>
-
         </div>
 
-        <!-- SECTION 2: OWNER ADMIN PANEL VIEW (Protected) -->
+        <!-- SECTION 2: CUSTOMER LIVE TRACKING VIEW -->
+        <div id="track-view" style="display: none;" class="max-w-2xl mx-auto space-y-6">
+            <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 lg:p-8 shadow-2xl backdrop-blur-sm">
+                <h2 class="text-2xl font-black text-white mb-2">Live Service Tracker</h2>
+                <p class="text-slate-400 text-sm mb-6">Enter your Registered Mobile Number or Slip ID to check live repair status.</p>
+
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="track-input" placeholder="e.g. 9876543210 or 101" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition">
+                    <button onclick="searchCustomerBooking()" class="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold px-6 py-3 rounded-xl text-sm transition">
+                        Search
+                    </button>
+                </div>
+
+                <div id="track-result" class="min-h-[100px]">
+                    <p class="text-center text-xs text-slate-500 py-6">Search result will appear here.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: OWNER ADMIN PANEL VIEW (Protected) -->
         <div id="admin-view" style="display: none;" class="space-y-6">
-            
-            <!-- Owner Analytics KPI Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl shadow-xl flex items-center justify-between">
                     <div>
                         <p class="text-xs font-bold text-slate-400 uppercase">Total Clients</p>
                         <h3 id="stat-total-clients" class="text-3xl font-black text-white mt-1">0</h3>
                     </div>
-                    <div class="text-2xl">??</div>
                 </div>
 
                 <div class="bg-slate-900/90 border border-amber-500/30 p-5 rounded-2xl shadow-xl flex items-center justify-between">
@@ -178,7 +238,6 @@
                         <p class="text-xs font-bold text-amber-400 uppercase">Pending Activation</p>
                         <h3 id="stat-pending" class="text-3xl font-black text-amber-400 mt-1">0</h3>
                     </div>
-                    <div class="text-2xl">?</div>
                 </div>
 
                 <div class="bg-slate-900/90 border border-slate-800 p-5 rounded-2xl shadow-xl flex items-center justify-between">
@@ -186,7 +245,6 @@
                         <p class="text-xs font-bold text-blue-400 uppercase">Confirmed / Active</p>
                         <h3 id="stat-confirmed" class="text-3xl font-black text-blue-400 mt-1">0</h3>
                     </div>
-                    <div class="text-2xl">??</div>
                 </div>
 
                 <div class="bg-slate-900/90 border border-emerald-500/30 p-5 rounded-2xl shadow-xl flex items-center justify-between">
@@ -194,21 +252,19 @@
                         <p class="text-xs font-bold text-emerald-400 uppercase">Completed Jobs</p>
                         <h3 id="stat-completed" class="text-3xl font-black text-emerald-400 mt-1">0</h3>
                     </div>
-                    <div class="text-2xl">?</div>
                 </div>
             </div>
 
-            <!-- Admin Table View -->
             <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur-sm">
                 <div class="flex flex-wrap justify-between items-center gap-4 mb-6 pb-4 border-b border-slate-800">
                     <div>
-                        <h2 class="text-2xl font-black text-white">??? Kunal Wagh - Owner Control Panel</h2>
+                        <h2 class="text-2xl font-black text-white">Kunal Wagh - Owner Control Panel</h2>
                         <p class="text-slate-400 text-sm">Activate pending bookings, manage client statuses & trigger WhatsApp updates.</p>
                     </div>
                     <div class="flex items-center gap-3">
                         <input type="text" id="admin-search" oninput="filterBookings()" placeholder="Search client or phone..." class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500">
                         <button onclick="loadBookings()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition">
-                            ?? Refresh DB
+                            Refresh DB
                         </button>
                     </div>
                 </div>
@@ -237,9 +293,8 @@
 
     </main>
 
-    <!-- Footer -->
     <footer class="border-t border-slate-900 bg-slate-950/90 py-6 text-center text-xs text-slate-500">
-        <p>© 2026 AutoFix Pro Garage, Dhule, Maharashtra. Director: Kunal Wagh | Powered by Spring Boot Microservices.</p>
+        <p>© 2026 Wagh AutoFix Pro Garage, Dhule, Maharashtra. Director: Kunal Wagh | Powered by Spring Boot Microservices.</p>
     </footer>
 
     <script src="script.js"></script>
