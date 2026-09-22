@@ -78,25 +78,60 @@ function closeSlipModal() {
     document.getElementById("slip-modal").style.display = "none";
 }
 
+function viewSlipModal(id, customerName, phone, serviceType, bookingDate, cost) {
+    document.getElementById("slip-id-badge").innerText = `#GAR-${id}`;
+    document.getElementById("slip-customer").innerText = customerName;
+    document.getElementById("slip-phone").innerText = phone;
+    document.getElementById("slip-vehicle").innerText = serviceType;
+    document.getElementById("slip-service").innerText = serviceType;
+    document.getElementById("slip-date").innerText = bookingDate;
+    document.getElementById("slip-cost").innerText = cost;
+    
+    document.getElementById("slip-modal").style.display = "flex";
+}
+
 document.getElementById("booking-form").addEventListener("submit", async function(e) {
     e.preventDefault();
     const statusMsg = document.getElementById("booking-status");
-    statusMsg.innerText = "Submitting booking to Wagh Garage system...";
+    statusMsg.innerText = "Checking existing records & submitting...";
     statusMsg.className = "mt-4 text-center text-sm font-semibold text-amber-400";
 
-    const customerName = document.getElementById("customerName").value;
-    const phone = document.getElementById("phone").value;
+    const customerName = document.getElementById("customerName").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const carModel = document.getElementById("carModel").value.trim();
     const serviceType = document.getElementById("serviceType").value;
     const bookingDate = document.getElementById("bookingDate").value;
 
     const serviceSelect = document.getElementById("serviceType");
     const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
     const price = selectedOption.getAttribute("data-price") || "2499";
+    const formattedPrice = `INR ${parseInt(price).toLocaleString("en-IN")}`;
+
+    try {
+        const checkResponse = await fetch(API_URL);
+        if (checkResponse.ok) {
+            const existingBookings = await checkResponse.json();
+            
+            const duplicate = existingBookings.find(b => 
+                (b.phone === phone || (carModel && b.serviceType && b.serviceType.toLowerCase().includes(carModel.toLowerCase()))) &&
+                (b.status === "PENDING" || b.status === "CONFIRMED")
+            );
+
+            if (duplicate) {
+                statusMsg.innerText = `?? Duplicate Booking Error! Active service (#GAR-${duplicate.id}) already exists for Phone/Vehicle (${duplicate.status}).`;
+                statusMsg.className = "mt-4 text-center text-sm font-bold text-rose-400 bg-rose-500/10 p-3 rounded-xl border border-rose-500/30";
+                return;
+            }
+        }
+    } catch (err) {
+    }
+
+    const serviceWithVehicle = carModel ? `${serviceType} [Vehicle: ${carModel}]` : serviceType;
 
     const payload = {
         customerName: customerName,
         phone: phone,
-        serviceType: serviceType,
+        serviceType: serviceWithVehicle,
         bookingDate: bookingDate,
         status: "PENDING"
     };
@@ -113,14 +148,15 @@ document.getElementById("booking-form").addEventListener("submit", async functio
             statusMsg.innerText = "Booking Submitted Successfully!";
             statusMsg.className = "mt-4 text-center text-sm font-semibold text-emerald-400";
             
-            document.getElementById("slip-id-badge").innerText = `#GAR-${savedData.id || "NEW"}`;
-            document.getElementById("slip-customer").innerText = customerName;
-            document.getElementById("slip-phone").innerText = phone;
-            document.getElementById("slip-service").innerText = serviceType;
-            document.getElementById("slip-date").innerText = bookingDate;
-            document.getElementById("slip-cost").innerText = `INR ${parseInt(price).toLocaleString("en-IN")}`;
-            
-            document.getElementById("slip-modal").style.display = "flex";
+            viewSlipModal(
+                savedData.id || "NEW",
+                customerName,
+                phone,
+                serviceWithVehicle,
+                bookingDate,
+                formattedPrice
+            );
+
             document.getElementById("booking-form").reset();
             calculatePrice();
         } else {
@@ -140,13 +176,15 @@ function calculatePrice() {
 }
 
 async function searchCustomerBooking() {
-    const query = document.getElementById("track-input").value.trim().toLowerCase();
+    let query = document.getElementById("track-input").value.trim().toLowerCase();
     const resultDiv = document.getElementById("track-result");
 
     if (!query) {
-        resultDiv.innerHTML = "<p class=\"text-center text-xs text-rose-400 py-4\">Please enter a Mobile Number or Slip ID.</p>";
+        resultDiv.innerHTML = "<p class=\"text-center text-xs text-rose-400 py-4\">Please enter a Mobile Number, Vehicle Number, or Slip ID.</p>";
         return;
     }
+
+    query = query.replace("#", "").replace("gar-", "").replace("gar", "");
 
     resultDiv.innerHTML = "<p class=\"text-center text-xs text-amber-400 py-4\">Searching database records...</p>";
 
@@ -155,9 +193,10 @@ async function searchCustomerBooking() {
         const data = await response.json();
 
         const found = data.filter(b => 
-            b.phone.includes(query) || 
+            b.phone.toLowerCase().includes(query) || 
             b.id.toString() === query ||
-            `gar-${b.id}` === query
+            b.customerName.toLowerCase().includes(query) ||
+            (b.serviceType && b.serviceType.toLowerCase().includes(query))
         );
 
         if (found.length === 0) {
@@ -177,6 +216,9 @@ async function searchCustomerBooking() {
                 statusText = "SERVICING COMPLETED & READY FOR DELIVERY";
             }
 
+            const cleanName = b.customerName.replace(/["']/g, "");
+            const cleanService = b.serviceType.replace(/["']/g, "");
+
             return `
                 <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3 mb-3">
                     <div class="flex justify-between items-center">
@@ -184,9 +226,14 @@ async function searchCustomerBooking() {
                         <span class="text-slate-400 text-xs">${b.bookingDate}</span>
                     </div>
                     <div class="text-sm font-bold text-white">${b.customerName} (${b.phone})</div>
-                    <div class="text-xs text-slate-300">Service: <span class="font-semibold text-slate-100">${b.serviceType}</span></div>
+                    <div class="text-xs text-slate-300">Service Details: <span class="font-semibold text-slate-100">${b.serviceType}</span></div>
                     <div class="p-2.5 rounded-lg border text-xs font-bold text-center ${statusColor}">
                         Status: ${statusText}
+                    </div>
+                    <div class="pt-1 flex justify-end">
+                        <button onclick="viewSlipModal('${b.id}', '${cleanName}', '${b.phone}', '${cleanService}', '${b.bookingDate}', 'Estimated')" class="text-xs bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold px-3 py-1.5 rounded-lg hover:opacity-90 transition">
+                            ?? Download / View PDF Slip
+                        </button>
                     </div>
                 </div>
             `;
@@ -232,6 +279,8 @@ function renderAdminTable(data) {
         if (b.status === "COMPLETED") badgeClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
 
         const whatsappMsg = encodeURIComponent(`Hello ${b.customerName}, your booking #GAR-${b.id} for ${b.serviceType} at Wagh AutoFix Pro Garage Dhule is currently: ${b.status}. - Owner Kunal Wagh`);
+        const cleanName = b.customerName.replace(/["']/g, "");
+        const cleanService = b.serviceType.replace(/["']/g, "");
 
         return `
             <tr class="hover:bg-slate-800/40 transition">
@@ -252,8 +301,11 @@ function renderAdminTable(data) {
                         <option value="COMPLETED" ${b.status === "COMPLETED" ? "selected" : ""}>MARK COMPLETED</option>
                     </select>
                 </td>
-                <td class="p-3 text-right">
-                    <a href="https://wa.me/91${b.phone}?text=${whatsappMsg}" target="_blank" class="inline-flex items-center gap-1 text-xs bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white border border-emerald-500/30 px-2.5 py-1 rounded-lg transition">
+                <td class="p-3 text-right flex items-center justify-end gap-2">
+                    <button onclick="viewSlipModal('${b.id}', '${cleanName}', '${b.phone}', '${cleanService}', '${b.bookingDate}', 'Estimated')" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 px-2 py-1 rounded-lg transition">
+                        ?? PDF Slip
+                    </button>
+                    <a href="https://wa.me/91${b.phone}?text=${whatsappMsg}" target="_blank" class="inline-flex items-center gap-1 text-xs bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white border border-emerald-500/30 px-2 py-1 rounded-lg transition">
                         WhatsApp
                     </a>
                 </td>
@@ -273,7 +325,8 @@ function filterBookings() {
     const query = document.getElementById("admin-search").value.toLowerCase();
     const filtered = allBookingsCache.filter(b => 
         b.customerName.toLowerCase().includes(query) || 
-        b.phone.includes(query)
+        b.phone.includes(query) ||
+        (b.serviceType && b.serviceType.toLowerCase().includes(query))
     );
     renderAdminTable(filtered);
 }
